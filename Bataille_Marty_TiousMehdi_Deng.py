@@ -18,30 +18,71 @@ class Bateau:
     
   def couler(self):
     self._coule = True
-    
-  # Cette méthode renverra toujours False si le bateau est coulé, de manière à
-  # éviter d'attribuer des points à quelqu'un qui coule un bateau coulé.
-  # Est-ce judicieux ??
+
   def estMemeCase(self, lig, col):
-    if self.estCoule():
-      return False
-    else:
-      return self.getLigne() == lig and self.getColonne() == col
-  
-  # Cette méthode renverra toujours False si le bateau est coulé, de manière à
-  # éviter d'attribuer des points à quelqu'un qui coule un bateau coulé.
-  # Est-ce judicieux ??
-  # D'ailleurs, cette méthode renverra False si la case donnée en paramètre est
-  # la même que celle du bateau. Au cas où la partie est mal codée...
+    return self.getLigne() == lig and self.getColonne() == col
+
   def estEnVue(self, lig, col):
-    if self.estCoule:
-      return False
-    elif self.estMemeCase(lig, col):
+    if self.estMemeCase(lig, col):
       return False
     else:
       return self.getLigne() == lig or self.getColonne() == col
 
+def chercherBateauDansListe(liste, lig, col):
+    for bateau in liste:
+        if bateau.estMemeCase(lig, col):
+            return bateau
+    return None
+    
+def chercherBateauxEnVue(liste, lig, col):
+    bateaux = []
+    for bateau in liste:
+        if bateau.estEnVue(lig, col):
+            bateaux.append(bateau)
+    return bateaux
+
+def afficherGrille(bateaux, ligneCoup=None, colonneCoup=None):
+    for ligne in range(5):
+        for colonne in range(5):
+            bateau = chercherBateauDansListe(bateaux, ligne, colonne)
+            if ligneCoup == ligne and colonneCoup == colonne:
+                print("!", end="")
+            elif bateau == None:
+                print(".", end="")
+            elif bateau.estCoule():
+                print("X", end="")
+            else:
+                print("B", end="")
+        print()
+    print()
+
+def partieAleatoire():
+    bateaux = []
+    for iBateau in range(2):
+        bateau = Bateau(random.randint(0,4), random.randint(0,4))
+        while chercherBateauDansListe(bateaux, bateau.getLigne(), bateau.getColonne()) != None:
+            bateau = Bateau(random.randint(0,4), random.randint(0,4))
+        bateaux.append(bateau)
+    afficherGrille(bateaux)
+    essais = []
+    points = 0
+    for iEssai in range(3):
+        case = [random.randint(0,4), random.randint(0,4)]
+        while case in essais:
+            case = [random.randint(0,4), random.randint(0,4)]
+        essais.append(case)
+        bateauMemeCase = chercherBateauDansListe(bateaux, case[0], case[1])
+        bateauxEnVue = chercherBateauxEnVue(bateaux, case[0], case[1])
+        if bateauMemeCase != None and not bateauMemeCase.estCoule():
+            bateauMemeCase.couler()
+            points = points + 8
+        for bateau in bateauxEnVue:
+            if not bateau.estCoule():
+                points = points + 1
+        afficherGrille(bateaux, case[0], case[1])
+    print("Résultat : %d points" % points)
+
 def main():
-  pass
+  partieAleatoire()
   
 main()
