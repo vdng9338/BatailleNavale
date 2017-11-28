@@ -125,10 +125,13 @@ def main():
       points = partieAleatoire()
       joueur.ajouterPoints(points)
   tri(joueurs)
-  moyenne = sum(list(joueurs))/len(joueurs)									
-  joueurs.append(moyenne)
+  somme = 0
+  for joueur in joueurs:
+    somme = somme + joueur.getNbPoints()
+	moyenne = somme / len(joueurs)
   for joueur in joueurs:
     print(joueur)
+	print("Moyenne :", moyenne)
   
   
 main()
