@@ -80,7 +80,7 @@ def afficherGrille(bateaux, ligneCoup=None, colonneCoup=None):
 
 def partieAleatoire():
   bateaux = []
-  for iBateau in range(2):
+  for iBateau in range(2):       
     bateau = Bateau(random.randint(0,4), random.randint(0,4))
     while chercherBateauDansListe(bateaux, bateau.getLigne(), bateau.getColonne()) != None:
       bateau = Bateau(random.randint(0,4), random.randint(0,4))
@@ -125,6 +125,8 @@ def main():
       points = partieAleatoire()
       joueur.ajouterPoints(points)
   tri(joueurs)
+  moyenne = sum(list(joueurs))/len(joueurs)									
+  joueurs.append(moyenne)
   for joueur in joueurs:
     print(joueur)
   
