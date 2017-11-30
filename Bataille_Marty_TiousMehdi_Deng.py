@@ -1,6 +1,7 @@
 import random
 
 # Une classe Bateau qui simplifie le code de la partie.
+# Pour la version de base, une seule case.
 class Bateau:
   def __init__(self, lig, col):
     self._lig = lig
@@ -30,7 +31,7 @@ class Bateau:
       
       
       
-      
+# Une classe Joueur qui stocke le nom du joueur et son total de points.
 class Joueur:
   def __init__(self, nom, nbPoints):
     self._nom = nom
@@ -44,7 +45,8 @@ class Joueur:
     
   def ajouterPoints(self, nbPointsAjout):
     self._nbPoints = self._nbPoints + nbPointsAjout
-    
+  
+  # Méthode pour un affichage simplifié.
   def __str__(self):
     return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points"
 
