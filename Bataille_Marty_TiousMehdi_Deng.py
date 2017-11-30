@@ -1,6 +1,8 @@
 import random
 
 # Une classe Bateau qui simplifie le code de la partie.
+# Pour cette version bonus, un bateau peut faire une case (dans ce cas-là les
+# deux coordonnées sont les mêmes) ou deux cases.
 class Bateau:
   def __init__(self, lig1, col1, lig2, col2):
     self._lig1 = lig1
@@ -9,6 +11,7 @@ class Bateau:
     self._col2 = col2
     self._coule = False
     
+  # Accesseurs des coordonnées
   def getLigne1(self):
     return self._lig1
     
@@ -22,19 +25,24 @@ class Bateau:
     return self._col2
     
     
-    
-    
-    
-    
+
+  # Accesseurs et mutateurs pour le champ "coulé"
   def estCoule(self):
     return self._coule
     
   def couler(self):
     self._coule = True
 
+  
+  # Cette méthode renvoie True si la case donnée est une des cases de ce bateau, False sinon.
   def intersecteCase(self, lig, col):
     return (self.getLigne1() == lig and self.getColonne1() == col) or (self.getLigne2() == lig and self.getColonne2() == col)
 
+  # Cette méthode renvoie True si ce bateau et le bateau passé en paramètre partagent au
+  # moins une case en commun. Elle permet d'éviter de mettre deux bateaux au même endroit lors
+  # de la génération aléatoire.
+  # Le fait de ne pas avoir utilisé des listes de 2 pour la ligne et la colonne rend le code
+  # un peu répétitif...
   def intersecte(self, autreBateau):
     if self.getLigne1() == autreBateau.getLigne1() and self.getColonne1() == autreBateau.getColonne1():
       return True
@@ -47,6 +55,8 @@ class Bateau:
     else:
       return False
     
+  # Renvoie True si la case passée en paramètre n'est pas une des cases du bateau mais est à
+  # la même colonne ou la même ligne qu'une des cases du bateau.
   def estEnVue(self, lig, col):
     if self.intersecteCase(lig, col):
       return False
@@ -55,7 +65,7 @@ class Bateau:
       
       
       
-      
+# Une classe Joueur qui stocke le nom du joueur et son total de points.
 class Joueur:
   def __init__(self, nom, nbPoints):
     self._nom = nom
@@ -69,12 +79,14 @@ class Joueur:
     
   def ajouterPoints(self, nbPointsAjout):
     self._nbPoints = self._nbPoints + nbPointsAjout
-    
+  
+  # Affichage simplifié du joueur.
   def __str__(self):
     return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points"
 
 
-
+# Retourne True si le bateau passé en paramètre n'est pas None et ne partage de case
+# avec aucun autre bateau de la liste passée en paramètre, False sinon.
 def bateauInserableDansListe(liste, bateauAutre):
   if bateauAutre == None:
     return False
@@ -83,12 +95,16 @@ def bateauInserableDansListe(liste, bateauAutre):
       return False
   return True
 
+# Retourne _le_ bateau de la liste en paramètre présent à une certaine case passée en
+# paramètre, None s'il n'y en a aucun.
 def chercherBateauDansListe(liste, lig, col):
   for bateau in liste:
     if bateau.intersecteCase(lig, col):
       return bateau
   return None
     
+# Retourne les bateaux de la liste en paramètre en vue pour la case en paramètre.
+# N'inclut pas l'éventuel bateau dont une des cases est celle passée en paramètre.
 def chercherBateauxEnVue(liste, lig, col):
   bateaux = []
   for bateau in liste:
@@ -96,6 +112,10 @@ def chercherBateauxEnVue(liste, lig, col):
       bateaux.append(bateau)
   return bateaux
 
+# Affichage basique de la grille, avec éventuellement un coup.
+# Légende :
+# . : rien                B : bateau
+# X : bateau coulé        ! : coup (remplace le bateau le cas échéant)
 def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
   for ligne in range(tailleGrille):
     for colonne in range(tailleGrille):
@@ -111,6 +131,9 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
     print()
   print()
 
+# Procédure qui effectue une partie aléatoire avec nbBateaux bateaux et une grille
+# carée de tailleGrille x tailleGrille. Renvoie le nombre de points total.
+## A commenter : assez long...
 def partieAleatoire(nbBateaux, tailleGrille):
   bateaux = []
   for iBateau in range(nbBateaux):
@@ -158,6 +181,8 @@ def partieAleatoire(nbBateaux, tailleGrille):
   return points
   
 
+# Procédure qui trie le tableau de joueurs passé en paramètre par score
+# décroissant. Algorithme : tri sélection.
 def tri (joueurs):
   for i in range (len(joueurs)):
     imax = i
@@ -166,7 +191,8 @@ def tri (joueurs):
         imax = j
     if i != imax:
       joueurs[i], joueurs[imax] = joueurs[imax], joueurs[i]
-      
+
+# La fonction principale.
 def main():
   # Entrée de paramètres (pas de blindage de la lecture !)
   nbBateaux = int(input("Nombre de bateaux : "))
