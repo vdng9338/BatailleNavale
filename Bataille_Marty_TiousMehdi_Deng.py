@@ -20,9 +20,12 @@ class Bateau:
   def couler(self):
     self._coule = True
 
+  # Retourne si le bateau est à la case décrite.
   def estMemeCase(self, lig, col):
     return self.getLigne() == lig and self.getColonne() == col
 
+  # Retourne si le bateau est considéré en vue depuis la case décrite, c'est-à-dire soit à la même
+  # colonne soit à la même ligne (mais pas les deux).
   def estEnVue(self, lig, col):
     if self.estMemeCase(lig, col):
       return False
@@ -52,12 +55,16 @@ class Joueur:
 
 
 
+# Cherche étant donné une liste de bateaux et une case le bateau éventuel qui est à la case donnée en paramètre.
+# Inclut les bateaux coulés !
 def chercherBateauDansListe(liste, lig, col):
   for bateau in liste:
     if bateau.estMemeCase(lig, col):
       return bateau
   return None
-    
+
+# Cherche, étant donné une liste de bateaux et une case, les éventuels bateaux en vue depuis la case donnée.
+# Inclut les bateaux coulés !
 def chercherBateauxEnVue(liste, lig, col):
   bateaux = []
   for bateau in liste:
@@ -65,6 +72,8 @@ def chercherBateauxEnVue(liste, lig, col):
       bateaux.append(bateau)
   return bateaux
 
+# Affichage de la grille avec éventuellement le coup porté : ! pour le coup, . pour rien du tout, X pour un bateau
+# coulé, B pour un bateau encore en vie.
 def afficherGrille(bateaux, ligneCoup=None, colonneCoup=None):
   for ligne in range(5):
     for colonne in range(5):
@@ -80,26 +89,34 @@ def afficherGrille(bateaux, ligneCoup=None, colonneCoup=None):
     print()
   print()
 
+# Cette fonction exécute une partie aléatoire (3 essais) et renvoie le nombre de points obtenus.
 def partieAleatoire():
+  # Génération des bateaux
   bateaux = []
   for iBateau in range(2):       
-    bateau = Bateau(random.randint(0,4), random.randint(0,4))
+    bateau = Bateau(None, None)
     while chercherBateauDansListe(bateaux, bateau.getLigne(), bateau.getColonne()) != None:
       bateau = Bateau(random.randint(0,4), random.randint(0,4))
     bateaux.append(bateau)
   #afficherGrille(bateaux)
+  
+  # La partie à proprement parler
   essais = []
   points = 0
   for iEssai in range(3):
-    case = [random.randint(0,4), random.randint(0,4)]
+    # Détermination de la case à toucher
+    case = [None, None]
     while case in essais:
       case = [random.randint(0,4), random.randint(0,4)]
     essais.append(case)
+    # Récupération des bateaux en vue et à la même case
     bateauMemeCase = chercherBateauDansListe(bateaux, case[0], case[1])
     bateauxEnVue = chercherBateauxEnVue(bateaux, case[0], case[1])
+    # Coulage de l'éventuel bateau coulé
     if bateauMemeCase != None and not bateauMemeCase.estCoule():
       bateauMemeCase.couler()
       points = points + 8
+    # Ajout des points pour chaque bateau en vue
     for bateau in bateauxEnVue:
       if not bateau.estCoule():
         points = points + 1
@@ -108,6 +125,7 @@ def partieAleatoire():
   return points
   
 
+# Trie la liste de joueurs donnée par score décroissant. Tri sélection.
 def tri (joueurs):
   for i in range (len(joueurs)):
     imax = i
@@ -119,21 +137,26 @@ def tri (joueurs):
       
 def main():
   noms = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Alexandre Petit-Jaillet"]
+  # Création du tableau des joueurs
   joueurs = []
   for nom in noms:
     joueurs.append(Joueur(nom, 0))
+  # 100 parties par joueur
   for iPartie in range(100):
     for joueur in joueurs:
       points = partieAleatoire()
       joueur.ajouterPoints(points)
+  # Tri des joueurs
   tri(joueurs)
+  # Calcul de la moyenne
   somme = 0
   for joueur in joueurs:
     somme = somme + joueur.getNbPoints()
-	moyenne = somme / len(joueurs)
+  moyenne = somme / len(joueurs)
+  # Affichage
   for joueur in joueurs:
     print(joueur)
-	print("Moyenne :", moyenne)
+  print("Moyenne :", moyenne)
   
   
 main()
