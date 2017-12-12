@@ -120,16 +120,16 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
   for ligne in range(tailleGrille):
     for colonne in range(tailleGrille):
       bateau = chercherBateauDansListe(bateaux, ligne, colonne)
-      if ligneCoup == ligne and colonneCoup == colonne:
-        print("!", end="")
-      elif bateau == None:
-        print(".", end="")
-      elif bateau.estCoule():
-        print("X", end="")
-      else:
-        print("B", end="")
-    print()
-  print()
+      #if ligneCoup == ligne and colonneCoup == colonne:
+       # print("!", end="")
+      #elif bateau == None:
+        #print(".", end="")
+      #elif bateau.estCoule():
+        #print("X", end="")
+      #else:
+        #print("B", end="")
+    #print()
+  #print()
 
 # Procédure qui effectue une partie aléatoire avec nbBateaux bateaux et une grille
 # carée de tailleGrille x tailleGrille. Renvoie le nombre de points total.
@@ -177,7 +177,7 @@ def partieAleatoire(nbBateaux, tailleGrille):
       if not bateau.estCoule():
         points = points + 1
     afficherGrille(bateaux, tailleGrille, case[0], case[1])
-  print("Résultat : %d points" % points)
+  #print("Résultat : %d points" % points)
   return points
   
 
@@ -198,11 +198,11 @@ def main():
   nbBateaux = int(input("Nombre de bateaux : "))
   tailleGrille = int(input("Taille de la grille : "))
   
-  noms = ["M", "N", "Alexandre Petit-Jaillet"]
+  noms = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Alexandre Petit-Jaillet"]
   joueurs = []
   for nom in noms:
     joueurs.append(Joueur(nom, 0))
-  for iPartie in range(5):
+  for iPartie in range(100):
     for joueur in joueurs:
       points = partieAleatoire(nbBateaux, tailleGrille)
       joueur.ajouterPoints(points)
