@@ -113,6 +113,7 @@ def chercherBateauxEnVue(liste, lig, col):
   return bateaux
 
 # Affichage basique de la grille, avec éventuellement un coup.
+# Par défaut cette fonction n'est jamais appelée.
 # Légende :
 # . : rien                B : bateau
 # X : bateau coulé        ! : coup (remplace le bateau le cas échéant)
@@ -120,16 +121,16 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
   for ligne in range(tailleGrille):
     for colonne in range(tailleGrille):
       bateau = chercherBateauDansListe(bateaux, ligne, colonne)
-      #if ligneCoup == ligne and colonneCoup == colonne:
-       # print("!", end="")
-      #elif bateau == None:
-        #print(".", end="")
-      #elif bateau.estCoule():
-        #print("X", end="")
-      #else:
-        #print("B", end="")
-    #print()
-  #print()
+      if ligneCoup == ligne and colonneCoup == colonne:
+        print("!", end="")
+      elif bateau == None:
+        print(".", end="")
+      elif bateau.estCoule():
+        print("X", end="")
+      else:
+        print("B", end="")
+    print()
+  print()
 
 # Procédure qui effectue une partie aléatoire avec nbBateaux bateaux et une grille
 # carée de tailleGrille x tailleGrille. Renvoie le nombre de points total.
@@ -160,7 +161,7 @@ def partieAleatoire(nbBateaux, tailleGrille):
     bateaux.append(bateau)
   
                       
-  afficherGrille(bateaux, tailleGrille)
+  #afficherGrille(bateaux, tailleGrille)
   essais = []
   points = 0
   for iEssai in range(3):
@@ -176,7 +177,7 @@ def partieAleatoire(nbBateaux, tailleGrille):
     for bateau in bateauxEnVue:
       if not bateau.estCoule():
         points = points + 1
-    afficherGrille(bateaux, tailleGrille, case[0], case[1])
+    #afficherGrille(bateaux, tailleGrille, case[0], case[1])
   #print("Résultat : %d points" % points)
   return points
   
@@ -195,10 +196,26 @@ def tri (joueurs):
 # La fonction principale.
 def main():
   # Entrée de paramètres (pas de blindage de la lecture !)
-  nbBateaux = int(input("Nombre de bateaux : "))
-  tailleGrille = int(input("Taille de la grille : "))
-  
-  noms = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Alexandre Petit-Jaillet"]
+  verifbato = 1
+  while verifbato==1:
+    try:
+      nbBateaux = input("Nombre de bateaux : ")
+      int(nbBateaux)
+      verifbato = 0
+    except:
+      print("/!\ Veuillez entrer un nombre entier.")
+  nbBateaux = int(nbBateaux)
+  verifgri = 1
+  while verifgri == 1:
+    tailleGrille = input("Taille de la grille : ")
+    try:
+      int(tailleGrille)
+      verifgri = 0
+    except:
+      print("/!\ Veuillez entrer un nombre entier")
+  tailleGrille = int(tailleGrille)
+    
+  noms = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
   joueurs = []
   for nom in noms:
     joueurs.append(Joueur(nom, 0))
@@ -215,7 +232,26 @@ def main():
     print(joueur)
   print("Moyenne :", moyenne)
   
+
+
+#interface H-M #interface H-M #interface H-M #interface H-M #interface H-M #interface H-M #interface H-M
+
+
+boucle = True
+
+while boucle == True:
+  choixmenu = input("""\n \n Menu principal 
+1. Partie automatique
+2. Jouer une partie
+3. Quitter\n""")
+
+  if choixmenu == "1":
+    main()
+  #elif choixmenu == "2":
+    #partiejouer()             #fonction à créer en bonus (partie joué par le joueur qui choisira les coordonnées à frapper)
+  elif choixmenu == "3":
+    boucle = False
+  else:
+    print(" /!\ Veuillez entrer l'une des commandes proposées. ")
   
-main()
-# ATTENTION : J'ai changé le nombre de parties et de joueurs pour le test.
-# Il faut les remettre à respectivement 100 et 15!
+  
