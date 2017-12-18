@@ -134,24 +134,35 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
 
 # Procédure qui effectue une partie aléatoire avec nbBateaux bateaux et une grille
 # carée de tailleGrille x tailleGrille. Renvoie le nombre de points total.
-## A commenter : assez long...
+# Risque de boucler indéfiniment dans les deux cas suivants :
+# 1 - On a une grille 1x1 (impossible de réaliser trois coups).
+# 2 - La grille des bateaux est complètement remplie, mais tous les bateaux n'ont
+#     pas encore été générés. (Dans le cas où il reste très peu de cases libres
+#     la génération aléatoire peut prendre assez longtemps, le temps de retomber
+#     sur une case libre.)
+# A détecter.
 def partieAleatoire(nbBateaux, tailleGrille):
+  # Liste des bateaux
   bateaux = []
   for iBateau in range(nbBateaux):
     bateau = None
+    # Tant que le bateau sélectionné est en conflit avec un autre, on crée un bateau au hasard
     while not bateauInserableDansListe(bateaux, bateau):
+      # Coordonnées aléatoires
       haut = random.randint(0, tailleGrille-1)
       gauche = random.randint(0, tailleGrille-1)
+      # Un nombre entre 1 et 3. Si ce nombre est 1, alors le bateau aura 2
+      # cases, sinon il n'en aura qu'une. Donc un peu moins d'un tiers de
+      # bateaux à 2 cases.
       etendre = random.randint(1, 3) <= 1
-      bateau = None
       if etendre:
-        direction = random.randint(1,2) == 1
-        if direction == 1: # DROITE
+        direction = random.randint(1,2)
+        if direction == 1: # DROITE : seulement s'il y a de la place
           if gauche < tailleGrille-1:
             bateau = Bateau(haut, gauche, haut, gauche+1)
           else:
             bateau = Bateau(haut, gauche, haut, gauche)
-        elif direction == 2: # BAS
+        elif direction == 2: # BAS : seulement s'il y a de la place
           if haut < tailleGrille-1:
             bateau = Bateau(haut, gauche, haut+1, gauche)
           else:
@@ -160,25 +171,25 @@ def partieAleatoire(nbBateaux, tailleGrille):
         bateau = Bateau(haut, gauche, haut, gauche)
     bateaux.append(bateau)
   
-                      
-  #afficherGrille(bateaux, tailleGrille)
+  
+  # Liste d'essais déjà effectués
   essais = []
   points = 0
   for iEssai in range(3):
-    case = [random.randint(0,tailleGrille-1), random.randint(0,tailleGrille-1)]
+    # Coup aléatoire (on ne tape pas une case plus d'une fois)
+    case = None
     while case in essais:
-      case = [random.randint(0,4), random.randint(0,4)]
+      case = [random.randint(0,tailleGrille-1), random.randint(0,tailleGrille-1)]
     essais.append(case)
     bateauMemeCase = chercherBateauDansListe(bateaux, case[0], case[1])
     bateauxEnVue = chercherBateauxEnVue(bateaux, case[0], case[1])
-    if bateauMemeCase != None and not bateauMemeCase.estCoule():
+    if bateauMemeCase != None and not bateauMemeCase.estCoule(): # Si on a coulé un bateau...
       bateauMemeCase.couler()
       points = points + 8
     for bateau in bateauxEnVue:
       if not bateau.estCoule():
         points = points + 1
-    #afficherGrille(bateaux, tailleGrille, case[0], case[1])
-  #print("Résultat : %d points" % points)
+  
   return points
   
 
@@ -193,11 +204,12 @@ def tri (joueurs):
     if i != imax:
       joueurs[i], joueurs[imax] = joueurs[imax], joueurs[i]
 
-# La fonction principale.
-def main():
-  # Entrée de paramètres (pas de blindage de la lecture !)
+# La fonction de parties aléatoires.
+## On peut ajouter un peu de blindage. (nombres négatifs ?)
+def progPartiesAleatoires():
+  # Entrée des paramètres.
   verifbato = 1
-  while verifbato==1:
+  while verifbato==1: # Tant que le nombre entré est invalide
     try:
       nbBateaux = input("Nombre de bateaux : ")
       int(nbBateaux)
@@ -212,24 +224,27 @@ def main():
       int(tailleGrille)
       verifgri = 0
     except:
-      print("/!\ Veuillez entrer un nombre entier")
+      print("/!\ Veuillez entrer un nombre entier.")
   tailleGrille = int(tailleGrille)
-    
+  
+  # On a décidé de nommer les joueurs ainsi :
   noms = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
   joueurs = []
   for nom in noms:
     joueurs.append(Joueur(nom, 0))
+  # 100 parties par joueur
   for iPartie in range(100):
     for joueur in joueurs:
       points = partieAleatoire(nbBateaux, tailleGrille)
       joueur.ajouterPoints(points)
+  
   tri(joueurs)
   somme = 0
   for joueur in joueurs:
     somme = somme + joueur.getNbPoints()
   moyenne = somme / len(joueurs)
   for joueur in joueurs:
-    print(joueur)
+    print(joueur) # Affiche le nombre de points du joueur
   print("Moyenne :", moyenne)
   
 
@@ -246,7 +261,7 @@ while boucle == True:
 3. Quitter\n""")
 
   if choixmenu == "1":
-    main()
+    progPartiesAleatoires()
   #elif choixmenu == "2":
     #partiejouer()             #fonction à créer en bonus (partie joué par le joueur qui choisira les coordonnées à frapper)
   elif choixmenu == "3":
