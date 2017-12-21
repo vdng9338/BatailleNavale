@@ -178,8 +178,8 @@ def partieAleatoire(nbBateaux, tailleGrille):
   for iEssai in range(3):
     # Coup aléatoire (on ne tape pas une case plus d'une fois)
     case = None
-    while case in essais:
-      case = [random.randint(0,tailleGrille-1), random.randint(0,tailleGrille-1)]
+    while case == None or case in essais:
+        case = [random.randint(0,tailleGrille-1), random.randint(0,tailleGrille-1)]
     essais.append(case)
     bateauMemeCase = chercherBateauDansListe(bateaux, case[0], case[1])
     bateauxEnVue = chercherBateauxEnVue(bateaux, case[0], case[1])
@@ -192,7 +192,65 @@ def partieAleatoire(nbBateaux, tailleGrille):
   
   return points
   
-
+def partiejouer(nbBateauxpartie ,tailleGrillepartie):
+  # Liste des bateaux
+  
+  
+  bateaux = []
+  for iBateau in range(nbBateauxpartie):
+    bateau = None
+    while not bateauInserableDansListe(bateaux, bateau):
+      # Coordonnées
+      haut = random.randint(1, tailleGrillepartie) ## ???
+      gauche = random.randint(1, tailleGrillepartie) ## ???
+      bateau = Bateau(haut, gauche, haut, gauche)
+    bateaux.append(bateau)
+  
+  essaisjoueur = []
+  pointsjoueur = 0
+  for iEssai in range(3):
+    # Coup aléatoire (on ne tape pas une case plus d'une fois)
+    casefrappe = None
+    while casefrappe == None or casefrappe in essaisjoueur:
+        if casefrappe != None:
+          print("Vous avez déjà frappé cette case auparavant.")
+        verif_entree_gauche = 1 ## Attention à l'indentation...
+        while verif_entree_gauche == 1: # Tant que le nombre entré est invalide
+          try:
+            casefrappegauche = input("Quelle case voulez vous frapper ? \n abcisse (de 1 à "+str( tailleGrillepartie)+") : ")
+            int(casefrappegauche)
+            verif_entree_gauche = 0
+          except:
+            print("/!\ Veuillez entrer un nombre entier.")
+        casefrappegauche = int(casefrappegauche)
+        
+        verif_entree_haut = 1
+        while verif_entree_haut == 1:
+          casefrappehaut = input(" ordonnée (de 1 à "+str(tailleGrillepartie)+") : ")
+          try:
+            int(casefrappehaut)
+            verif_entree_haut = 0
+          except:
+            print("/!\ Veuillez entrer un nombre entier.")
+          casefrappehaut = int(casefrappehaut)
+        casefrappe = (casefrappehaut, casefrappegauche)
+    essaisjoueur.append(casefrappe)
+    bateauMemeCase = chercherBateauDansListe(bateaux, casefrappe[0], casefrappe[1])
+    bateauxEnVue = chercherBateauxEnVue(bateaux, casefrappe[0], casefrappe[1])
+    if bateauMemeCase != None and not bateauMemeCase.estCoule(): # Si on a coulé un bateau...
+      bateauMemeCase.couler()
+      pointsjoueur += 8
+      print("Vous avez coulé un bateau !")
+    nbBateauxEnVue = 0
+    for bateau in bateauxEnVue:
+      if not bateau.estCoule():
+        pointsjoueur += 1
+        nbBateauxEnVue += 1
+    print("Il y a", nbBateauxEnVue, "bateau(x) en vue.\n")
+    
+  print("Vous avez gagné", pointsjoueur, "points.")
+  return pointsjoueur
+  
 # Procédure qui trie le tableau de joueurs passé en paramètre par score
 # décroissant. Algorithme : tri sélection.
 def tri (joueurs):
@@ -208,21 +266,21 @@ def tri (joueurs):
 ## On peut ajouter un peu de blindage. (nombres négatifs ?)
 def progPartiesAleatoires():
   # Entrée des paramètres.
-  verifbato = 1
-  while verifbato==1: # Tant que le nombre entré est invalide
+  verifbateau = 1
+  while verifbateau==1: # Tant que le nombre entré est invalide
     try:
       nbBateaux = input("Nombre de bateaux : ")
       int(nbBateaux)
-      verifbato = 0
+      verifbateau = 0
     except:
       print("/!\ Veuillez entrer un nombre entier.")
   nbBateaux = int(nbBateaux)
-  verifgri = 1
-  while verifgri == 1:
+  verifgrille = 1
+  while verifgrille == 1:
     tailleGrille = input("Taille de la grille : ")
     try:
       int(tailleGrille)
-      verifgri = 0
+      verifgrille = 0
     except:
       print("/!\ Veuillez entrer un nombre entier.")
   tailleGrille = int(tailleGrille)
@@ -262,11 +320,9 @@ while boucle == True:
 
   if choixmenu == "1":
     progPartiesAleatoires()
-  #elif choixmenu == "2":
-    #partiejouer()             #fonction à créer en bonus (partie joué par le joueur qui choisira les coordonnées à frapper)
+  elif choixmenu == "2":
+    partiejouer(6, 100)             #fonction à créer en bonus (partie jouée par le joueur qui choisira les coordonnées à frapper)
   elif choixmenu == "3":
     boucle = False
   else:
     print(" /!\ Veuillez entrer l'une des commandes proposées. ")
-  
-  
