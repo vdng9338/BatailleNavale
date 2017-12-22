@@ -51,7 +51,7 @@ class Joueur:
   
   # Méthode pour un affichage simplifié.
   def __str__(self):
-    return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points"
+    return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points."
 
 
 
