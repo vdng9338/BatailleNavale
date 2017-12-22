@@ -195,17 +195,17 @@ def partieAleatoire(nbBateaux, tailleGrille):
 def partiejouer(nbBateauxpartie ,tailleGrillepartie):
   # Liste des bateaux
   
-  print("""Ici, vous jouez une partie contre l'ordinateur avec les règles suivante:
+  print("""Ici, vous jouez une partie contre l'ordinateur avec les règles suivantes :
  - vous ne placez pas de bateaux, vous tenter simplement d'en couler 6.
  - vous entrer les coordonnées à frapper que vous ne pourrez pas frapper à nouveau plus tard.
- - vous avez une limite de 10 coups à tirer, soyez stratégique .
+ - vous avez une limite de 10 coups à tirer, soyez stratégique.
  """)
   
   bateaux = []
   for iBateau in range(nbBateauxpartie):
     bateau = None
     while not bateauInserableDansListe(bateaux, bateau):
-      # Coordonnées des batau 
+      # Coordonnées des bateaux
       haut = random.randint(1, tailleGrillepartie) ## Les bateaux sopnt placés aléatoirement dans la grille
       gauche = random.randint(1, tailleGrillepartie) 
       bateau = Bateau(haut, gauche, haut, gauche)
@@ -222,7 +222,7 @@ def partiejouer(nbBateauxpartie ,tailleGrillepartie):
         verif_entree_gauche = 1 ## Attention à l'indentation...
         while verif_entree_gauche == 1: # Tant que le nombre entré est invalide
           try:
-            casefrappegauche = input("Quelle case voulez vous frapper ?  \n abcisse (de 1 à "+str( tailleGrillepartie)+") : ")
+            casefrappegauche = input("Quelle case voulez vous frapper ?  \n Colonne (de 1 à "+str( tailleGrillepartie)+") : ")
             int(casefrappegauche)
             verif_entree_gauche = 0
           except:
@@ -231,7 +231,7 @@ def partiejouer(nbBateauxpartie ,tailleGrillepartie):
         
         verif_entree_haut = 1
         while verif_entree_haut == 1:
-          casefrappehaut = input(" ordonnée (de 1 à "+str(tailleGrillepartie)+") : ")
+          casefrappehaut = input(" Ligne (de 1 à "+str(tailleGrillepartie)+") : ")
           try:
             int(casefrappehaut)
             verif_entree_haut = 0
