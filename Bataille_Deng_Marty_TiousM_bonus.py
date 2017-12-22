@@ -39,10 +39,9 @@ class Bateau:
     return (self.getLigne1() == lig and self.getColonne1() == col) or (self.getLigne2() == lig and self.getColonne2() == col)
 
   # Cette méthode renvoie True si ce bateau et le bateau passé en paramètre partagent au
-  # moins une case en commun. Elle permet d'éviter de mettre deux bateaux au même endroit lors
-  # de la génération aléatoire.
+  # moins une case en commun.
   # Le fait de ne pas avoir utilisé des listes de 2 pour la ligne et la colonne rend le code
-  # un peu répétitif...
+  # un peu répétitif.
   def intersecte(self, autreBateau):
     if self.getLigne1() == autreBateau.getLigne1() and self.getColonne1() == autreBateau.getColonne1():
       return True
@@ -82,7 +81,7 @@ class Joueur:
   
   # Affichage simplifié du joueur.
   def __str__(self):
-    return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points"
+    return "Le joueur " + self._nom + " a " + str(self._nbPoints) + " points."
 
 
 # Retourne True si le bateau passé en paramètre n'est pas None et ne partage de case
@@ -134,17 +133,18 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
 
 # Procédure qui effectue une partie aléatoire avec nbBateaux bateaux et une grille
 # carée de tailleGrille x tailleGrille. Renvoie le nombre de points total.
-# Risque de boucler indéfiniment dans les deux cas suivants :
-# 1 - On a une grille 1x1 (impossible de réaliser trois coups).
-# 2 - La grille des bateaux est complètement remplie, mais tous les bateaux n'ont
-#     pas encore été générés. (Dans le cas où il reste très peu de cases libres
-#     la génération aléatoire peut prendre assez longtemps, le temps de retomber
-#     sur une case libre.)
-# A détecter.
+# Des vérifications permettent d'éviter une boucle infinie. Cependant la génération
+# peut prendre longtemps dans le cas d'une grosse grille quasiment remplie. Défaut
+# de l'algorithme de génération...
 def partieAleatoire(nbBateaux, tailleGrille):
   # Liste des bateaux
   bateaux = []
+  # Compteur de cases libres. Il serait bête d'avoir une boucle infinie à cause
+  # d'une grille remplie !
+  nbCasesRestantes = tailleGrille * tailleGrille
   for iBateau in range(nbBateaux):
+    if nbCasesRestantes == 0:
+      break
     bateau = None
     # Tant que le bateau sélectionné est en conflit avec un autre, on crée un bateau au hasard
     while not bateauInserableDansListe(bateaux, bateau):
@@ -154,7 +154,7 @@ def partieAleatoire(nbBateaux, tailleGrille):
       # Un nombre entre 1 et 3. Si ce nombre est 1, alors le bateau aura 2
       # cases, sinon il n'en aura qu'une. Donc un peu moins d'un tiers de
       # bateaux à 2 cases.
-      etendre = random.randint(1, 3) <= 1
+      etendre = random.randint(1, 3) <= 1 and nbCasesRestantes > 1
       if etendre:
         direction = random.randint(1,2)
         if direction == 1: # DROITE : seulement s'il y a de la place
@@ -169,13 +169,18 @@ def partieAleatoire(nbBateaux, tailleGrille):
             bateau = Bateau(haut, gauche, haut, gauche)
       else:
         bateau = Bateau(haut, gauche, haut, gauche)
+    if bateau.getLigne1() == bateau.getLigne2() and bateau.getColonne1() == bateau.getColonne2():
+      nbCasesBateau = 1
+    else:
+      nbCasesBateau = 2
+    nbCasesRestantes -= nbCasesBateau
     bateaux.append(bateau)
   
   
   # Liste d'essais déjà effectués
   essais = []
   points = 0
-  for iEssai in range(3):
+  for iEssai in range(min(3, tailleGrille*tailleGrille)):
     # Coup aléatoire (on ne tape pas une case plus d'une fois)
     case = None
     while case == None or case in essais:
@@ -192,13 +197,15 @@ def partieAleatoire(nbBateaux, tailleGrille):
   
   return points
   
-def partiejouer(nbBateauxpartie ,tailleGrillepartie):
+def partiejouer(nbBateauxpartie, tailleGrillepartie):
   # Liste des bateaux
   
   print("""Ici, vous jouez une partie contre l'ordinateur avec les règles suivantes :
- - vous ne placez pas de bateaux, vous tenter simplement d'en couler 6.
- - vous entrer les coordonnées à frapper que vous ne pourrez pas frapper à nouveau plus tard.
- - vous avez une limite de 10 coups à tirer, soyez stratégique.
+ - Vous ne placez pas de bateaux, vous tentez simplement d'en couler 6.
+ - Vous entrez les coordonnées d'une case à frapper que vous ne pourrez pas frapper à nouveau plus tard.
+ - Vous jouez dans une grille de 10 lignes sur 10 colonnes
+ - Si vous entrez une ligne ou une colonne au dessus de 10, ce nombre sera remplacé par 10 pour ne pas frapper une case inexistante.
+ - Vous avez une limite de 10 coups à tirer, soyez stratégique !
  """)
   
   bateaux = []
@@ -213,7 +220,7 @@ def partiejouer(nbBateauxpartie ,tailleGrillepartie):
   
   essaisjoueur = []
   pointsjoueur = 0
-  for iEssai in range(10):
+  for iEssai in range(min(10, tailleGrillepartie*tailleGrillepartie)):
     # Coup (on ne tape pas une case plus d'une fois)
     casefrappe = None
     while casefrappe == None or casefrappe in essaisjoueur:
@@ -225,19 +232,23 @@ def partiejouer(nbBateauxpartie ,tailleGrillepartie):
             casefrappegauche = input("Quelle case voulez vous frapper ?  \n Colonne (de 1 à "+str( tailleGrillepartie)+") : ")
             int(casefrappegauche)
             verif_entree_gauche = 0
-          except:
+          except ValueError:
             print("/!\ Veuillez entrer un nombre entier.")
         casefrappegauche = int(casefrappegauche)
-        
+        while casefrappegauche > 10:
+          casefrappegauche -= 1
+          
         verif_entree_haut = 1
         while verif_entree_haut == 1:
           casefrappehaut = input(" Ligne (de 1 à "+str(tailleGrillepartie)+") : ")
           try:
             int(casefrappehaut)
             verif_entree_haut = 0
-          except:
+          except ValueError:
             print("/!\ Veuillez entrer un nombre entier.")
           casefrappehaut = int(casefrappehaut)
+          while casefrappehaut > 10:
+            casefrappehaut -= 1
         casefrappe = (casefrappehaut, casefrappegauche)
     essaisjoueur.append(casefrappe)
     bateauMemeCase = chercherBateauDansListe(bateaux, casefrappe[0], casefrappe[1])
@@ -277,7 +288,7 @@ def progPartiesAleatoires():
       nbBateaux = input("Nombre de bateaux : ")
       int(nbBateaux)
       verifbateau = 0
-    except:
+    except ValueError:
       print("/!\ Veuillez entrer un nombre entier.")
   nbBateaux = int(nbBateaux)
   verifgrille = 1
@@ -286,7 +297,7 @@ def progPartiesAleatoires():
     try:
       int(tailleGrille)
       verifgrille = 0
-    except:
+    except ValueError:
       print("/!\ Veuillez entrer un nombre entier.")
   tailleGrille = int(tailleGrille)
   
