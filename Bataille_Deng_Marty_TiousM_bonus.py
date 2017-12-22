@@ -195,21 +195,26 @@ def partieAleatoire(nbBateaux, tailleGrille):
 def partiejouer(nbBateauxpartie ,tailleGrillepartie):
   # Liste des bateaux
   
+  print("""Ici, vous jouez une partie contre l'ordinateur avec les règles suivante:
+ - vous ne placez pas de bateaux, vous tenter simplement d'en couler 6.
+ - vous entrer les coordonnées à frapper que vous ne pourrez pas frapper à nouveau plus tard.
+ - vous avez une limite de 10 coups à tirer, soyez stratégique .
+ """)
   
   bateaux = []
   for iBateau in range(nbBateauxpartie):
     bateau = None
     while not bateauInserableDansListe(bateaux, bateau):
-      # Coordonnées
-      haut = random.randint(1, tailleGrillepartie) ## ???
-      gauche = random.randint(1, tailleGrillepartie) ## ???
+      # Coordonnées des batau 
+      haut = random.randint(1, tailleGrillepartie) ## Les bateaux sopnt placés aléatoirement dans la grille
+      gauche = random.randint(1, tailleGrillepartie) 
       bateau = Bateau(haut, gauche, haut, gauche)
     bateaux.append(bateau)
   
   essaisjoueur = []
   pointsjoueur = 0
-  for iEssai in range(3):
-    # Coup aléatoire (on ne tape pas une case plus d'une fois)
+  for iEssai in range(10):
+    # Coup (on ne tape pas une case plus d'une fois)
     casefrappe = None
     while casefrappe == None or casefrappe in essaisjoueur:
         if casefrappe != None:
@@ -217,7 +222,7 @@ def partiejouer(nbBateauxpartie ,tailleGrillepartie):
         verif_entree_gauche = 1 ## Attention à l'indentation...
         while verif_entree_gauche == 1: # Tant que le nombre entré est invalide
           try:
-            casefrappegauche = input("Quelle case voulez vous frapper ? \n abcisse (de 1 à "+str( tailleGrillepartie)+") : ")
+            casefrappegauche = input("Quelle case voulez vous frapper ?  \n abcisse (de 1 à "+str( tailleGrillepartie)+") : ")
             int(casefrappegauche)
             verif_entree_gauche = 0
           except:
@@ -307,8 +312,9 @@ def progPartiesAleatoires():
   
 
 
-#interface H-M #interface H-M #interface H-M #interface H-M #interface H-M #interface H-M #interface H-M
-
+#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
+#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
+#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
 
 boucle = True
 
@@ -320,8 +326,10 @@ while boucle == True:
 
   if choixmenu == "1":
     progPartiesAleatoires()
+    
   elif choixmenu == "2":
-    partiejouer(6, 100)             #fonction à créer en bonus (partie jouée par le joueur qui choisira les coordonnées à frapper)
+    partiejouer(6, 10)             #fonction à créer en bonus (partie jouée par le joueur qui choisira les coordonnées à frapper)
+    
   elif choixmenu == "3":
     boucle = False
   else:
