@@ -137,7 +137,6 @@ def afficherGrille(bateaux, tailleGrille, ligneCoup=None, colonneCoup=None):
 # peut prendre longtemps dans le cas d'une grosse grille quasiment remplie. Défaut
 # de l'algorithme de génération...
 def partieAleatoire(nbBateaux, tailleGrille):
-  # Liste des bateaux
   bateaux = []
   # Compteur de cases libres. Il serait bête d'avoir une boucle infinie à cause
   # d'une grille remplie !
@@ -148,7 +147,6 @@ def partieAleatoire(nbBateaux, tailleGrille):
     bateau = None
     # Tant que le bateau sélectionné est en conflit avec un autre, on crée un bateau au hasard
     while not bateauInserableDansListe(bateaux, bateau):
-      # Coordonnées aléatoires
       haut = random.randint(0, tailleGrille-1)
       gauche = random.randint(0, tailleGrille-1)
       # Un nombre entre 1 et 3. Si ce nombre est 1, alors le bateau aura 2
@@ -188,7 +186,7 @@ def partieAleatoire(nbBateaux, tailleGrille):
     essais.append(case)
     bateauMemeCase = chercherBateauDansListe(bateaux, case[0], case[1])
     bateauxEnVue = chercherBateauxEnVue(bateaux, case[0], case[1])
-    if bateauMemeCase != None and not bateauMemeCase.estCoule(): # Si on a coulé un bateau...
+    if bateauMemeCase != None and not bateauMemeCase.estCoule():
       bateauMemeCase.couler()
       points = points + 8
     for bateau in bateauxEnVue:
@@ -198,13 +196,13 @@ def partieAleatoire(nbBateaux, tailleGrille):
   return points
   
 def partiejouer(nbBateauxpartie, tailleGrillepartie):
-  # Liste des bateaux
   
   print("""Ici, vous jouez une partie contre l'ordinateur avec les règles suivantes :
  - Vous ne placez pas de bateaux, vous tentez simplement d'en couler 6.
  - Vous entrez les coordonnées d'une case à frapper que vous ne pourrez pas frapper à nouveau plus tard.
  - Vous jouez dans une grille de 10 lignes sur 10 colonnes
  - Si vous entrez une ligne ou une colonne au dessus de 10, ce nombre sera remplacé par 10 pour ne pas frapper une case inexistante.
+   De même pour des coordonnées négatives ou nulles.
  - Vous avez une limite de 10 coups à tirer, soyez stratégique !
  """)
   
@@ -223,10 +221,11 @@ def partiejouer(nbBateauxpartie, tailleGrillepartie):
   for iEssai in range(min(10, tailleGrillepartie*tailleGrillepartie)):
     # Coup (on ne tape pas une case plus d'une fois)
     casefrappe = None
+    # Entrée des coordonnées
     while casefrappe == None or casefrappe in essaisjoueur:
         if casefrappe != None:
           print("Vous avez déjà frappé cette case auparavant.")
-        verif_entree_gauche = 1 ## Attention à l'indentation...
+        verif_entree_gauche = 1
         while verif_entree_gauche == 1: # Tant que le nombre entré est invalide
           try:
             casefrappegauche = input("Quelle case voulez vous frapper ?  \n Colonne (de 1 à "+str( tailleGrillepartie)+") : ")
@@ -235,8 +234,8 @@ def partiejouer(nbBateauxpartie, tailleGrillepartie):
           except ValueError:
             print("/!\ Veuillez entrer un nombre entier.")
         casefrappegauche = int(casefrappegauche)
-        while casefrappegauche > 10:
-          casefrappegauche -= 1
+        casefrappegauche = max(1, casefrappegauche)
+        casefrappegauche = min(10, casefrappegauche)
           
         verif_entree_haut = 1
         while verif_entree_haut == 1:
@@ -247,8 +246,8 @@ def partiejouer(nbBateauxpartie, tailleGrillepartie):
           except ValueError:
             print("/!\ Veuillez entrer un nombre entier.")
           casefrappehaut = int(casefrappehaut)
-          while casefrappehaut > 10:
-            casefrappehaut -= 1
+          casefrappehaut = max(1, casefrappehaut)
+          casefrappehaut = min(10, casefrappehaut)
         casefrappe = (casefrappehaut, casefrappegauche)
     essaisjoueur.append(casefrappe)
     bateauMemeCase = chercherBateauDansListe(bateaux, casefrappe[0], casefrappe[1])
@@ -287,18 +286,22 @@ def progPartiesAleatoires():
     try:
       nbBateaux = input("Nombre de bateaux : ")
       int(nbBateaux)
+      if int(nbBateaux) < 0:
+        raise ValueError
       verifbateau = 0
     except ValueError:
-      print("/!\ Veuillez entrer un nombre entier.")
+      print("/!\ Veuillez entrer un nombre entier positif ou nul.")
   nbBateaux = int(nbBateaux)
   verifgrille = 1
   while verifgrille == 1:
     tailleGrille = input("Taille de la grille : ")
     try:
       int(tailleGrille)
+      if int(tailleGrille) < 0:
+        raise ValueError
       verifgrille = 0
     except ValueError:
-      print("/!\ Veuillez entrer un nombre entier.")
+      print("/!\ Veuillez entrer un nombre entier positif ou nul.")
   tailleGrille = int(tailleGrille)
   
   # On a décidé de nommer les joueurs ainsi :
@@ -323,25 +326,26 @@ def progPartiesAleatoires():
   
 
 
-#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
-#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
-#INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M #INTERFACE H-M 
+# --------------------- Interface homme-machine ----------------------- #
 
 boucle = True
+try:
+  while boucle == True:
+    choixmenu = input("""\n \n Menu principal 
+  1. Partie automatique
+  2. Jouer une partie
+  3. Quitter\n""")
 
-while boucle == True:
-  choixmenu = input("""\n \n Menu principal 
-1. Partie automatique
-2. Jouer une partie
-3. Quitter\n""")
+    if choixmenu == "1":
+      progPartiesAleatoires()
+      
+    elif choixmenu == "2":
+      partiejouer(6, 10)             #fonction créée en bonus (partie jouée par le joueur qui choisira les coordonnées à frapper)
+      
+    elif choixmenu == "3":
+      boucle = False
 
-  if choixmenu == "1":
-    progPartiesAleatoires()
-    
-  elif choixmenu == "2":
-    partiejouer(6, 10)             #fonction à créer en bonus (partie jouée par le joueur qui choisira les coordonnées à frapper)
-    
-  elif choixmenu == "3":
-    boucle = False
-  else:
-    print(" /!\ Veuillez entrer l'une des commandes proposées. ")
+    else:
+      print(" /!\ Veuillez entrer l'une des commandes proposées. ")
+except KeyboardInterrupt:
+  print("\n\n\nArrêt.\n\n\n")
